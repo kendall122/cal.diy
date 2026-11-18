@@ -8,6 +8,12 @@ Evidencia: ruta de la captura en `evidencias/manual/CP-xx_<AAAA-MM-DD>.png` o en
 
 | CP | Fecha | Ejecutó | Resultado | Observaciones | Evidencia | Defecto |
 |---|---|---|---|---|---|---|
+| CP-03 | 2026-11-18 | Kendall | Pasó | Con `pro@example.com` se muestra el panel «Tipos de Evento». Interfaz en español. | `evidencias/manual/CP-03_2026-11-18.png` | — |
+| CP-04 | 2026-11-18 | Kendall | Pasó | Sigue en el login con «El correo electrónico o la contraseña son incorrectos.» (equivalente en español del mensaje del plan). | `evidencias/manual/CP-04_2026-11-18.png` | — |
+| CP-05 | 2026-11-18 | Kendall | Pasó | Con `noexiste@test.com` y la contraseña de otro usuario (`free`) aparece el mismo mensaje que en CP-04: «El correo electrónico o la contraseña son incorrectos.» | `evidencias/manual/CP-05_2026-11-18.png` | — |
+| CP-06 | 2026-11-18 | Kendall | Pasó | Con `noexiste@test.com` / `xxxx` sigue en el login con «El correo electrónico o la contraseña son incorrectos.» (equivalente en español del mensaje del plan). | `evidencias/manual/CP-06_2026-11-18.png` | — |
+| CP-07 | 2026-11-18 | Kendall | Pasó | Con `usuario.com` aparece «Ingresa un correo electrónico válido» y Network, filtrado por `callback`, queda vacío: no se envía la petición. | `evidencias/manual/CP-07_2026-11-18.png` | — |
+| CP-08 | 2026-11-18 | Kendall | Pasó | «Este campo es requerido.» aparece a la vez bajo correo y contraseña (equivalente en español del mensaje del plan). | `evidencias/manual/CP-08_2026-11-18.png` | — |
 
 ## Gary (CP-34 a CP-66)
 

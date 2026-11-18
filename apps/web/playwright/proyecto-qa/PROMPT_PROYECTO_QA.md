@@ -95,7 +95,7 @@ yarn dev                                           # http://localhost:3000
   - Tiempos máximos locales: 240 s por prueba y 120 s por `expect`.
   - Reportes: `list`, HTML en `test-results/reports/playwright-html-report` y JUnit en `test-results/reports/results.xml`. **El JUnit lo usaremos para las métricas del informe.**
 - **Fixtures** (`apps/web/playwright/lib/fixtures.ts`): importa `test` desde ahí, no desde `@playwright/test`. Los más útiles:
-  - **`users`**: `users.create(opts?)` crea un usuario con usuario y correo únicos (por omisión `<usuario>@example.com`, y la contraseña es el mismo nombre de usuario). `user.login()` inicia sesión y `users.deleteAll()` limpia, ideal en `afterEach`.
+  - **`users`**: `users.create(opts?)` crea un usuario con usuario y correo únicos (por omisión `<usuario>@example.com`; la contraseña por omisión es el usuario con la primera letra en mayúscula y un `1` al final, disponible con `getDefaultPassword(username)` de `apps/web/playwright/lib/testUtils.ts`). `user.login()` inicia sesión y `users.deleteAll()` limpia, ideal en `afterEach`.
   - **`bookings`, `prisma`, `emails`, `webhooks`, `servers`, `bookingPage`, `eventTypePage`**: revisa `apps/web/playwright/fixtures/*.ts` antes de usarlos.
 - **Textos de la interfaz:** usa `localize("en")` de `apps/web/playwright/lib/localize.ts` o los textos en inglés de `packages/i18n/locales/en/common.json`. **Prefiere `data-testid` cuando exista**. Por ejemplo, en el login: `[data-testid=login-form]`, `#email` y `[data-testid=field-error]`; en el menú: `[data-testid=user-dropdown-trigger]` y `[data-testid=logout-btn]`.
 - **Pruebas parecidas del repositorio** que sirven de modelo:
@@ -112,7 +112,7 @@ yarn dev                                           # http://localhost:3000
    - Si falla por un error en la prueba (selector, espera, datos), corrígela.
    - Si falla porque **la aplicación** no cumple el resultado esperado, es un **posible defecto**: deja la prueba con el resultado esperado del plan, documenta el defecto (regla 8) y avísame.
 3. **Antes de escribir selectores o rutas, verifícalos en el código fuente** (componentes en `apps/web/modules`, `packages/features`, rutas en `apps/web/app`). Los datos de la sección 7 se verificaron contra los commits `54343aa` y `ae027bb`, pero el commit fijado puede ser otro.
-4. **Trabaja un archivo a la vez.** Escríbelo, ejecútalo en modo headless (`PLAYWRIGHT_HEADLESS=1 yarn e2e <ruta>`), muéstrame el resultado y espera mi visto bueno antes de seguir.
+4. **Trabaja un archivo a la vez.** Escríbelo, ejecútalo en modo headless (`PLAYWRIGHT_HEADLESS=1 yarn e2e <ruta> --workers=6`), muéstrame el resultado y espera mi visto bueno antes de seguir.
 5. **Cada prueba crea sus propios datos** con los fixtures y los limpia en `afterEach`, para poder correr en paralelo. No dependas de los usuarios semilla ni del orden de ejecución.
 6. **Prohibido** `test.skip`, `test.only`, `waitForTimeout` con tiempos fijos (usa esperas de Playwright como `expect(...).toBeVisible()`, `waitForURL` o `waitForResponse`) y `as any`. Si un caso no se puede automatizar, avísame en vez de saltarlo.
 7. **Comentarios y nombres de prueba en español**; el código en inglés técnico normal. Comenta solo el "por qué" cuando no sea obvio.
@@ -187,7 +187,7 @@ test.describe("US-02 Inicio de sesión", () => {
   test("CP-04 rechaza una contraseña incorrecta", async ({ page, users }) => {
     const user = await users.create();
     await page.locator("#email").fill(user.email);
-    await page.locator("input[name=password]").fill("Incorrecta#1"); // verificar el selector real
+    await page.locator("#password").fill("Incorrecta#1");
     await page.locator("[data-testid=login-form] button[type=submit]").click();
     await expect(page.getByText("Email or password is incorrect.")).toBeVisible();
   });
@@ -297,16 +297,17 @@ V = dato válido, I = dato inválido. Técnicas: CE (clases de equivalencia), VL
 
 ```bash
 # Un archivo mientras se desarrolla
-PLAYWRIGHT_HEADLESS=1 yarn e2e apps/web/playwright/proyecto-qa/auth/login.e2e.ts
+PLAYWRIGHT_HEADLESS=1 yarn e2e apps/web/playwright/proyecto-qa/auth/login.e2e.ts --workers=6
 
 # Suite completa del curso, en paralelo
-PLAYWRIGHT_HEADLESS=1 yarn e2e apps/web/playwright/proyecto-qa
+PLAYWRIGHT_HEADLESS=1 yarn e2e apps/web/playwright/proyecto-qa --workers=6
 
 # Ver el reporte HTML y un trace
 npx playwright show-report test-results/reports/playwright-html-report
 npx playwright show-trace <ruta-al-trace.zip>
 ```
 
+- **Usa siempre `--workers=6`.** Las pruebas siguen corriendo en paralelo. Con los 16 procesos por defecto, la máquina se satura y Prisma falla al crear o borrar usuarios de prueba (`Unable to start a transaction in the given time`); con 6 pasaron 50 de 50.
 - **Al terminar cada ejecución completa**, guarda una copia del reporte HTML y de `test-results/reports/results.xml` (JUnit) en `apps/web/playwright/proyecto-qa/evidencias/<fecha>/`. Las vamos a usar en el informe de pruebas. Las evidencias manuales se describen en la **sección 12**.
 - **Métricas que necesito para el informe:**
   - Pruebas ejecutadas, aprobadas y fallidas, por tipo (sistema, integración, regresión) y por historia de usuario
