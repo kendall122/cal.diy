@@ -97,7 +97,7 @@ yarn dev                                           # http://localhost:3000
 - **Fixtures** (`apps/web/playwright/lib/fixtures.ts`): importa `test` desde ahí, no desde `@playwright/test`. Los más útiles:
   - **`users`**: `users.create(opts?)` crea un usuario con usuario y correo únicos (por omisión `<usuario>@example.com`; la contraseña por omisión es el usuario con la primera letra en mayúscula y un `1` al final, disponible con `getDefaultPassword(username)` de `apps/web/playwright/lib/testUtils.ts`). `user.login()` inicia sesión y `users.deleteAll()` limpia, ideal en `afterEach`.
   - **`bookings`, `prisma`, `emails`, `webhooks`, `servers`, `bookingPage`, `eventTypePage`**: revisa `apps/web/playwright/fixtures/*.ts` antes de usarlos.
-- **Textos de la interfaz:** usa `localize("en")` de `apps/web/playwright/lib/localize.ts` o los textos en inglés de `packages/i18n/locales/en/common.json`. **Prefiere `data-testid` cuando exista**. Por ejemplo, en el login: `[data-testid=login-form]`, `#email` y `[data-testid=field-error]`; en el menú: `[data-testid=user-dropdown-trigger]` y `[data-testid=logout-btn]`.
+- **Textos de la interfaz:** usa `localize("en")` de `apps/web/playwright/lib/localize.ts` o los textos en inglés de `packages/i18n/locales/en/common.json`. **Prefiere `data-testid` cuando exista**. Por ejemplo, en el login: `[data-testid=login-form]`, `#email` y `[data-testid=field-error]`; en el menú: `[data-testid=user-dropdown-trigger-button]:visible` y `[data-testid=logout-btn]`.
 - **Pruebas parecidas del repositorio** que sirven de modelo:
   - `login.e2e.ts`, `change-username.e2e.ts`, `profile.e2e.ts`, `event-types.e2e.ts`, `availability.e2e.ts`
   - `booking-limits.e2e.ts`, `booking-confirm-reject.e2e.ts`, `reschedule.e2e.ts`, `webhook.e2e.ts`
@@ -212,8 +212,9 @@ test.describe("US-02 Inicio de sesión", () => {
 - Eventos de webhook (CP-55 a CP-57)
 
 **Casos que necesitan preparación especial:**
-- **CP-01 y CP-02 (base de datos vacía):** el asistente `/auth/setup` solo aparece si no hay usuarios, y la base de datos semilla los tiene. Propón una estrategia **antes** de implementarlos, por ejemplo una segunda base de datos en otro puerto con su propio `DATABASE_URL`, o un proyecto de Playwright aparte que corra en serie. No borres la base de datos principal sin preguntarme.
-- **CP-49 (OAuth de Google):** requiere `GOOGLE_API_CREDENTIALS` en `.env`. Verifica solo la URL de redirección (`client_id` y `scope`), sin completar el inicio de sesión en Google.
+- **CP-01 y CP-02 (base de datos vacía):** estrategia aprobada: un comando aparte levanta una base temporal vacía en otro puerto, inicia la app contra ella, corre `auth/registro.e2e.ts` en serie y restaura la app normal. No borres la base de datos principal.
+- **CP-49 (OAuth de Google):** estrategia aprobada: la prueba coloca claves falsas en la app `google-calendar`, llama a `/api/integrations/googlecalendar/add`, verifica `client_id` y `scope` en la URL devuelta y restaura las claves. No contacta a Google.
+- **CP-11 (usuario duplicado):** se automatiza según el resultado esperado del plan; si la aplicación no lo cumple, la prueba falla y se registra el defecto.
 - **CP-55 a CP-58 (webhooks):** usa el fixture `webhooks` o `servers` como receptor y `NEXT_PUBLIC_IS_E2E=1`.
 - **CP-30 a CP-33 (ventana de reserva):** los horarios los calcula **el servidor** con su propia hora. **No uses `page.clock`.** Calcula los límites a partir de la hora real.
 - **CP-63 a CP-68 son manuales:** no se automatizan. Se ejecutan con las listas de chequeo y se registran en QAtlas.
@@ -232,7 +233,7 @@ V = dato válido, I = dato inválido. Técnicas: CE (clases de equivalencia), VL
 | CP-06 | US-02 | `auth/login.e2e.ts` | TD R4 | Correo no registrado y contraseña errónea | noexiste@test.com (I), xxxx (I) | Error genérico; sin sesión | Mismo mensaje genérico. |
 | CP-07 | US-02 | `auth/login.e2e.ts` | CE-I1 | Correo con formato inválido | usuario.com (I) | Validación de formato; no se envía | Validación del cliente: «Please enter a valid email» en `[data-testid=field-error]`; no se envía la petición. |
 | CP-08 | US-02 | `auth/login.e2e.ts` | CE-I2, CE-I5 | Campos vacíos | Correo y contraseña vacíos (I) | Mensajes de campo obligatorio | «This field is required.» Dividir en correo vacío y contraseña vacía. |
-| CP-09 | US-02 | `auth/logout.e2e.ts` | CE | Cerrar sesión y acceder a ruta protegida | Sesión activa → cerrar sesión → abrir /event-types | Sesión cerrada; redirige al login | `[data-testid=user-dropdown-trigger]` → «Sign out» → `[data-testid=logout-btn]`. Luego, `goto("/event-types")` debe terminar en `/auth/login`. |
+| CP-09 | US-02 | `auth/logout.e2e.ts` | CE | Cerrar sesión y acceder a ruta protegida | Sesión activa → cerrar sesión → abrir /event-types | Sesión cerrada; redirige al login | `[data-testid=user-dropdown-trigger-button]:visible` → «Sign out» → `[data-testid=logout-btn]`. Luego, `goto("/event-types")` debe terminar en `/auth/login`. |
 | CP-10 | US-03 | `perfil/perfil.e2e.ts` | CE-V4 | Modificar y guardar perfil | Nombre (V), usuario único (V), zona America/Costa_Rica (V) | Datos guardados y visibles tras recargar | `/settings/my-account/profile`: «Update» → «Profile updated successfully». El usuario se cambia con «Update» junto al campo y «Save» en el diálogo. La zona horaria está en `/settings/my-account/general` → «Settings updated successfully». Dividir en tres pruebas. |
 | CP-11 | US-03 | `perfil/perfil.e2e.ts` | CE-I7 | Usuario duplicado | Nombre de usuario ya existente (I) | Error de unicidad; no se guarda | Aparece «Username is already taken» y no se ofrece el botón «Update». |
 | CP-12 | US-03 | `perfil/perfil.e2e.ts` | CE-I8 | Usuario vacío o con caracteres inválidos | "" y "us er@#" (I) | Vacío: no se puede guardar. «us er@#» se normaliza a «us-er»; nunca se guarda con caracteres no permitidos | Verificado en el código: el valor se normaliza con slugify (`us er@#` → `us-er`), no da error. Vacío: no se puede guardar. |
@@ -327,14 +328,16 @@ npx playwright show-trace <ruta-al-trace.zip>
 3. Cada integrante sigue con sus módulos en su propia rama y junta a `proyecto-qa` cada vez que termina un archivo.
 4. Al final: ejecución completa de la suite en paralelo, evidencias, `DEFECTOS.md` y métricas.
 
-### Reparto por módulos (cada archivo tiene un solo dueño)
+### Reparto actualizado
 
-| Integrante | Rama | Archivos (en orden sugerido) | Casos |
-|---|---|---|---|
-| **Kendall** | `qa-kendall` | `auth/login.e2e.ts` (fija el patrón), `auth/logout.e2e.ts`, `perfil/perfil.e2e.ts`, `event-types/event-type.e2e.ts`, `disponibilidad/availability.e2e.ts`, `disponibilidad/buffer.e2e.ts`, `reservas/confirmacion.e2e.ts`, `reservas/ventana-reserva.e2e.ts`, `auth/registro.e2e.ts` (al final, por la base de datos vacía) | CP-01 a CP-33; manuales CP-67 y CP-68 |
-| **Gary** | `qa-gary` | `reservas/booking-form.e2e.ts`, `reservas/zonas-horarias.e2e.ts`, `reservas/cancelacion.e2e.ts`, `reservas/reprogramacion.e2e.ts`, `panel/bookings.e2e.ts`, `webhooks/webhooks.e2e.ts`, `api/*.e2e.ts`, `regresion/fork.e2e.ts`, `regresion/smoke.e2e.ts` | CP-34 a CP-62; manuales CP-63 a CP-66 |
+| Integrante | Rama | Responsabilidad |
+|---|---|---|
+| **Kendall** | `qa-kendall` | Automatiza con Playwright los 62 casos (CP-01 a CP-62), mantiene `proyecto-qa/lib/` y publica los resultados en QAtlas. |
+| **Gary** | `qa-gary` si necesita cambios en Git | Elabora el documento del proyecto y apoya con las ejecuciones manuales que se acuerden. |
 
-- Cuando empieces, **pregúntame quién está trabajando** (Kendall o Gary) y trabaja solo con los archivos de esa persona.
+**Orden de automatización:** `auth/logout`, `perfil/perfil`, `event-types/event-type`, `disponibilidad/availability`, `disponibilidad/buffer`, `reservas/confirmacion`, `reservas/ventana-reserva`, `reservas/booking-form`, `reservas/zonas-horarias`, `reservas/cancelacion`, `reservas/reprogramacion`, `panel/bookings`, `webhooks/webhooks`, `api/*`, `regresion/fork`, `regresion/smoke` y, al final, `auth/registro`.
+
+- Cuando empieces, **pregúntame quién está trabajando**.
 - **`proyecto-qa/lib/` es compartido:** antes de modificar algo ahí, avísame para coordinarlo con el otro integrante.
 
 ## 10. Entorno en Windows (WSL2)
@@ -384,11 +387,12 @@ Lo aprendido en la instalación de Kendall (Windows 11 + WSL2). Sigue este orden
 
 - **Ejecuciones manuales:** una por suite, creada al empezar cada módulo, con el nombre `Ejecución manual <suite> - <nombre>` (por ejemplo `Ejecución manual S1 - Kendall`).
 - **Ejecuciones automatizadas:** son corridas completas de la suite:
-  - «Ejecución automatizada · Playwright»: se importa con **«Importar resultados (JUnit)»** desde `test-results/reports/results.xml`.
+  - «Ejecución automatizada · Playwright»: se publica con `node apps/web/playwright/proyecto-qa/lib/publicar-qatlas.mjs --enviar`, que agrupa las pruebas por CP (ver `README.md`). No uses «Importar resultados (JUnit)», porque no relaciona nuestros Id.
   - «Regresión final»: la última corrida completa antes del informe.
 - **Id de automatización** de cada caso: `<archivo>#CP-xx`, relativo a `proyecto-qa/` (por ejemplo `auth/login.e2e.ts#CP-03`).
 - **Cambios de dueño pendientes en QAtlas:** CP-34 → Gary; CP-67 y CP-68 → Kendall.
-- **Pendiente:** con el JUnit de `auth/login.e2e.ts`, probar cómo relaciona QAtlas los resultados con los casos y cómo trata un CP que se dividió en varias pruebas (por ejemplo CP-08). El resultado se documenta en `README.md`.
+- **CP divididos en varias pruebas:** el script envía un solo resultado por CP y lo marca fallido si falla cualquiera de sus pruebas.
+- **Token:** cada integrante usa el suyo en `.env.qatlas`; nunca se sube a Git.
 
 ## 12. Evidencias
 

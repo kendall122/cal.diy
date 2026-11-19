@@ -1,0 +1,38 @@
+{
+  "caso": "CP-51",
+  "fecha": "2026-11-18",
+  "peticion": {
+    "metodo": "POST",
+    "ruta": "/api/book/event",
+    "concurrentes": 2,
+    "evento": "juanca/reunion-30-min",
+    "inicio_utc": "2026-12-08T21:00:00.000Z",
+    "inicio_costa_rica": "2026-12-08T15:00:00-06:00"
+  },
+  "respuestas": [
+    {
+      "http": 409,
+      "cuerpo": {
+        "message": "booking_conflict_error"
+      }
+    },
+    {
+      "http": 200,
+      "cuerpo": {
+        "id": 41,
+        "uid": "uPYAcYg7WMfDRqJnCxQtvg",
+        "status": "ACCEPTED"
+      }
+    }
+  ],
+  "reservas_en_ese_horario": {
+    "antes": 0,
+    "despues": [
+      [
+        "41",
+        "uPYAcYg7WMfDRqJnCxQtvg",
+        "accepted"
+      ]
+    ]
+  }
+}

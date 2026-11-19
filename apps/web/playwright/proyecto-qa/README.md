@@ -3,16 +3,12 @@
 Suite de Playwright del curso *Aseguramiento de la Calidad de Software* (TEC, grupo 50).
 Commit probado: `ae027bb70e694e2d2c44569f398d6cbcee0389b1`.
 
-## Para empezar (Gary)
+## Reparto
 
-1. Lee [PROMPT_PROYECTO_QA.md](PROMPT_PROYECTO_QA.md) completo: reglas, reparto (secciones 5 y 9) y tus casos CP-34 a CP-66 (sección 7).
-2. Pídele a Kendall acceso de colaborador al fork `kendall122/cal.diy` (necesario para hacer push).
-3. Configura Windows + WSL2 siguiendo la **sección 10** del PROMPT y clona el fork en `~/cal.diy`.
-4. Para que Claude Code cargue el PROMPT, crea `~/cal.diy/CLAUDE.local.md` con la línea `@apps/web/playwright/proyecto-qa/PROMPT_PROYECTO_QA.md` y agrega `CLAUDE.local.md` a `.git/info/exclude`.
-5. Haz la Fase 0 (sección 2) y la puesta en marcha (sección 3), hasta que pase la prueba de humo.
-6. Crea tu rama: `git fetch origin && git checkout -b qa-gary origin/proyecto-qa`.
-7. En QAtlas, crea las suites S4, S5 y S6 y vincúlalas al plan; sube S7 (sección 11).
-8. Sigue el ciclo de la sección «Patrón de las pruebas»: primero ejecuta a mano los casos de cada archivo, empezando por CP-34 a CP-36, y regístralos en QAtlas y en [EJECUCION_MANUAL.md](EJECUCION_MANUAL.md).
+- **Kendall:** automatiza los 62 casos con Playwright, mantiene `lib/` y publica los resultados en QAtlas.
+- **Gary:** elabora el documento del proyecto y apoya con las ejecuciones manuales acordadas.
+
+Para instalar el entorno, sigue las secciones 2, 3 y 10 de [PROMPT_PROYECTO_QA.md](PROMPT_PROYECTO_QA.md). El registro manual está en [EJECUCION_MANUAL.md](EJECUCION_MANUAL.md).
 
 ## Ejecución
 
@@ -86,6 +82,28 @@ test.describe("US-xx Nombre de la historia", () => {
 | Si falla | Corrige la prueba solo si el error es suyo. Si la app no cumple el plan, registra el defecto y deja el resultado esperado. |
 | Commits | `test(modulo): CP-xx a CP-yy descripción`. Trae antes los cambios con `git fetch origin && git merge origin/proyecto-qa`. |
 
-## QAtlas: relación entre JUnit y casos
+## Publicar resultados en QAtlas
 
-_Pendiente: se documenta tras importar el JUnit de `auth/login.e2e.ts` (cómo se asocia `archivo#CP-xx` y cómo se tratan los CP divididos en varias pruebas)._
+No uses «Importar resultados (JUnit)»: QAtlas busca el nombre del test, y el nuestro no coincide con el Id `archivo#CP-xx`. Tampoco el reporter oficial: si un CP dividido se envía dos veces, gana el último resultado y un fallo podría quedar oculto.
+
+Usa [lib/publicar-qatlas.mjs](lib/publicar-qatlas.mjs). Lee `test-results/reports/results.xml`, agrupa por CP y marca el caso como fallido si falla cualquiera de sus pruebas.
+
+Crea un token en tu perfil de QAtlas y guárdalo en `.env.qatlas`, en la raíz del repositorio (Git lo ignora):
+
+```bash
+QATLAS_URL=<dirección de QAtlas>/api
+QATLAS_TOKEN=<tu token>
+```
+
+```bash
+# Simulación: muestra el resultado por CP y comprueba los Id, sin escribir nada
+node apps/web/playwright/proyecto-qa/lib/publicar-qatlas.mjs
+
+# Registra la ejecución; repetirlo el mismo día con el mismo commit la actualiza
+node apps/web/playwright/proyecto-qa/lib/publicar-qatlas.mjs --enviar
+
+# Registra y cierra la ejecución (hazlo solo en la corrida final)
+node apps/web/playwright/proyecto-qa/lib/publicar-qatlas.mjs --enviar --completar
+```
+
+Opciones: `--archivo <ruta>`, `--nombre <texto>`, `--id-corrida <texto>` y `--proyecto <código>`.
