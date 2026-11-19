@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { test } from "../../lib/fixtures";
+import { captureEvidence, test } from "../lib/qa-test";
 import { retryOnBusyDatabase } from "../lib/reservas";
 
 type EventTypeForm = {
@@ -49,7 +49,8 @@ test.describe("US-05 Tipos de evento", () => {
     await user.apiLogin("/event-types");
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

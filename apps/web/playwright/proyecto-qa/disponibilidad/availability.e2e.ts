@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { test } from "../../lib/fixtures";
 import { submitAndWaitForResponse } from "../../lib/testUtils";
+import { captureEvidence, test } from "../lib/qa-test";
 import {
   bookSlotFromPage,
   configureHostAvailability,
@@ -65,7 +65,8 @@ test.describe("US-06 Disponibilidad", () => {
     await host.apiLogin("/availability");
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

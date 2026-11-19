@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import { localize } from "../../lib/localize";
-import { test } from "../lib/qa-test";
+import { captureEvidence, test } from "../lib/qa-test";
 import {
   bookSlotFromPage,
   configureHostAvailability,
@@ -46,7 +46,8 @@ test.describe("US-08 Confirmación de reservas", () => {
     };
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 
@@ -134,6 +135,8 @@ test.describe("US-08 Confirmación de reservas", () => {
     await page.request.post("/api/trpc/bookings/confirm?batch=1", {
       data: { 0: { json: { bookingId: booking.id, confirmed: true } } },
     });
+    // La página de la reserva deja en la evidencia el estado visible después del intento.
+    await page.goto(`/booking/${booking.uid}`);
     const { status } = await prisma.booking.findUniqueOrThrow({
       where: { id: booking.id },
       select: { status: true },

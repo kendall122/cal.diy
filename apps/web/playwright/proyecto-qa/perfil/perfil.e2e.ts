@@ -1,9 +1,9 @@
 import { slugify } from "@calcom/lib/slugify";
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { test } from "../../lib/fixtures";
 import { localize } from "../../lib/localize";
 import { submitAndWaitForResponse } from "../../lib/testUtils";
+import { captureEvidence, test } from "../lib/qa-test";
 import { retryOnBusyDatabase } from "../lib/reservas";
 
 const PROFILE_URL = "/settings/my-account/profile";
@@ -27,7 +27,8 @@ test.describe("US-03 Perfil de usuario", () => {
     await user.apiLogin(PROFILE_URL);
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

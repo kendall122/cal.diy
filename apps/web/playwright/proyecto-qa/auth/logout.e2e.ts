@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
-import { test } from "../../lib/fixtures";
 import { localize } from "../../lib/localize";
+import { captureEvidence, test } from "../lib/qa-test";
 import { retryOnBusyDatabase } from "../lib/reservas";
 
 test.describe.configure({ mode: "parallel" });
@@ -11,7 +11,8 @@ test.describe("US-02 Cierre de sesión", () => {
     await user.apiLogin("/event-types");
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

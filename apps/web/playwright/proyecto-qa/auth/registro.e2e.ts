@@ -1,6 +1,5 @@
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { test } from "../../lib/fixtures";
 import { localize } from "../../lib/localize";
 import {
   EMPTY_INSTANCE_URL,
@@ -8,6 +7,7 @@ import {
   startEmptyInstance,
   stopEmptyInstance,
 } from "../lib/instancia-vacia";
+import { captureEvidence, test } from "../lib/qa-test";
 
 type AdminForm = {
   username: string;
@@ -47,6 +47,10 @@ test.describe("US-01 Registro del primer usuario", () => {
     stopEmptyInstance();
   });
 
+  test.afterEach(async ({ page }, testInfo) => {
+    await captureEvidence(page, testInfo);
+  });
+
   test("CP-02 muestra el error de correo inválido", async ({ page }) => {
     const t = await localize("en");
     await fillAdminForm(page, { ...validAdmin, email: "admin.test.com" });
@@ -77,6 +81,8 @@ test.describe("US-01 Registro del primer usuario", () => {
   });
 
   test("CP-01 permite al administrador abrir la configuración de la instancia", async ({ page }) => {
+    // Equivale a omitir la configuración inicial, que no forma parte de este caso.
+    queryEmptyInstance(`update users set "completedOnboarding" = true where email = '${validAdmin.email}'`);
     await page.goto("/auth/login");
     await page.locator("#email").fill(validAdmin.email);
     await page.locator("#password").fill(validAdmin.password);
@@ -84,6 +90,6 @@ test.describe("US-01 Registro del primer usuario", () => {
     await page.waitForURL((url) => !url.pathname.startsWith("/auth/login"));
     await page.goto("/settings/admin");
 
-    await expect(page).toHaveURL(/\/settings\/admin/);
+    await expect(page.getByRole("heading", { name: "Feature flags" })).toBeVisible();
   });
 });

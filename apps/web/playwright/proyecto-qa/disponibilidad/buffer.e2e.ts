@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../lib/qa-test";
+import { captureEvidence, test } from "../lib/qa-test";
 import {
   configureHostAvailability,
   createBookingByApi,
@@ -50,7 +50,8 @@ test.describe("US-07 Tiempo de amortiguación", () => {
     await configureHostAvailability(prisma, host.id);
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

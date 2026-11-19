@@ -1,6 +1,5 @@
 import { expect } from "@playwright/test";
 import type { createUsersFixture } from "../../fixtures/users";
-import { test } from "../../lib/fixtures";
 import { localize } from "../../lib/localize";
 import { getDefaultPassword } from "../../lib/testUtils";
 import type { LoginCredentials } from "../lib/login";
@@ -11,6 +10,7 @@ import {
   loginFieldError,
   submitCredentials,
 } from "../lib/login";
+import { captureEvidence, test } from "../lib/qa-test";
 import { retryOnBusyDatabase } from "../lib/reservas";
 
 type UsersFixture = ReturnType<typeof createUsersFixture>;
@@ -68,7 +68,8 @@ test.describe("US-02 Inicio de sesión", () => {
     await page.goto("/auth/login");
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

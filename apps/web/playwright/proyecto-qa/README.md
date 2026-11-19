@@ -127,4 +127,11 @@ node apps/web/playwright/proyecto-qa/lib/publicar-qatlas.mjs --enviar
 node apps/web/playwright/proyecto-qa/lib/publicar-qatlas.mjs --enviar --completar
 ```
 
+Para adjuntar capturas y una nota breve por caso a una ejecución existente:
+
+```bash
+QA_EVIDENCE_DIR="$PWD/apps/web/playwright/proyecto-qa/evidencias/<fecha>/capturas" PLAYWRIGHT_HEADLESS=1 yarn e2e <rutas> --workers=6 --max-failures=0
+node apps/web/playwright/proyecto-qa/lib/publicar-evidencias-qatlas.mjs --ejecucion CL-RUN-X --archivo <results.xml> --capturas <carpeta> --enviar
+```
+
 Opciones: `--archivo <ruta>`, `--nombre <texto>`, `--id-corrida <texto>`, `--proyecto <código>` y `--build <texto>`.

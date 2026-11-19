@@ -1,0 +1,165 @@
+<testsuites id="" name="" tests="55" failures="1" skipped="0" errors="0" time="80.672786">
+<testsuite name="apps/web/playwright/proyecto-qa/auth/login.e2e.ts" timestamp="2026-11-19T03:50:59.420Z" hostname="@calcom/web" tests="10" failures="0" skipped="0" time="42.879" errors="0">
+<testcase name="US-02 Inicio de sesión › CP-03 inicia sesión con credenciales válidas y accede al panel" classname="apps/web/playwright/proyecto-qa/auth/login.e2e.ts" time="6.488">
+</testcase>
+<testcase name="US-02 Inicio de sesión › CP-04 muestra el error genérico con contraseña incorrecta" classname="apps/web/playwright/proyecto-qa/auth/login.e2e.ts" time="5.073">
+</testcase>
+<testcase name="US-02 Inicio de sesión › CP-05 muestra el error genérico con correo no registrado con la contraseña de otro usuario" classname="apps/web/playwright/proyecto-qa/auth/login.e2e.ts" time="3.175">
+</testcase>
+<testcase name="US-02 Inicio de sesión › CP-06 muestra el error genérico con correo no registrado y contraseña errónea" classname="apps/web/playwright/proyecto-qa/auth/login.e2e.ts" time="3.242">
+</testcase>
+<testcase name="US-02 Inicio de sesión › CP-04 no crea sesión con contraseña incorrecta" classname="apps/web/playwright/proyecto-qa/auth/login.e2e.ts" time="7.785">
+</testcase>
+<testcase name="US-02 Inicio de sesión › CP-06 no crea sesión con correo no registrado y contraseña errónea" classname="apps/web/playwright/proyecto-qa/auth/login.e2e.ts" time="5.877">
+</testcase>
+<testcase name="US-02 Inicio de sesión › CP-07 muestra el error de formato con un correo inválido" classname="apps/web/playwright/proyecto-qa/auth/login.e2e.ts" time="3.11">
+</testcase>
+<testcase name="US-02 Inicio de sesión › CP-07 no envía la petición con un correo inválido" classname="apps/web/playwright/proyecto-qa/auth/login.e2e.ts" time="3.443">
+</testcase>
+<testcase name="US-02 Inicio de sesión › CP-08 exige el campo correo" classname="apps/web/playwright/proyecto-qa/auth/login.e2e.ts" time="2.652">
+</testcase>
+<testcase name="US-02 Inicio de sesión › CP-08 exige el campo contraseña" classname="apps/web/playwright/proyecto-qa/auth/login.e2e.ts" time="2.034">
+</testcase>
+</testsuite>
+<testsuite name="apps/web/playwright/proyecto-qa/auth/logout.e2e.ts" timestamp="2026-11-19T03:50:59.420Z" hostname="@calcom/web" tests="1" failures="0" skipped="0" time="11.452" errors="0">
+<testcase name="US-02 Cierre de sesión › CP-09 redirige al login al abrir una ruta protegida tras cerrar sesión" classname="apps/web/playwright/proyecto-qa/auth/logout.e2e.ts" time="11.452">
+</testcase>
+</testsuite>
+<testsuite name="apps/web/playwright/proyecto-qa/auth/registro.e2e.ts" timestamp="2026-11-19T03:50:59.420Z" hostname="@calcom/web" tests="5" failures="0" skipped="0" time="16.553" errors="0">
+<testcase name="US-01 Registro del primer usuario › CP-02 muestra el error de correo inválido" classname="apps/web/playwright/proyecto-qa/auth/registro.e2e.ts" time="1.856">
+</testcase>
+<testcase name="US-01 Registro del primer usuario › CP-02 no permite continuar con una contraseña inválida" classname="apps/web/playwright/proyecto-qa/auth/registro.e2e.ts" time="2.102">
+</testcase>
+<testcase name="US-01 Registro del primer usuario › CP-02 no crea la cuenta con datos inválidos" classname="apps/web/playwright/proyecto-qa/auth/registro.e2e.ts" time="2.422">
+</testcase>
+<testcase name="US-01 Registro del primer usuario › CP-01 crea el primer usuario con rol administrador" classname="apps/web/playwright/proyecto-qa/auth/registro.e2e.ts" time="3.873">
+</testcase>
+<testcase name="US-01 Registro del primer usuario › CP-01 permite al administrador abrir la configuración de la instancia" classname="apps/web/playwright/proyecto-qa/auth/registro.e2e.ts" time="6.3">
+</testcase>
+</testsuite>
+<testsuite name="apps/web/playwright/proyecto-qa/disponibilidad/availability.e2e.ts" timestamp="2026-11-19T03:50:59.420Z" hostname="@calcom/web" tests="6" failures="0" skipped="0" time="55.104" errors="0">
+<testcase name="US-06 Disponibilidad › CP-18 crea una reserva dentro de la disponibilidad" classname="apps/web/playwright/proyecto-qa/disponibilidad/availability.e2e.ts" time="13.621">
+</testcase>
+<testcase name="US-06 Disponibilidad › CP-19 no ofrece horarios en un día no configurado" classname="apps/web/playwright/proyecto-qa/disponibilidad/availability.e2e.ts" time="9.878">
+</testcase>
+<testcase name="US-06 Disponibilidad › CP-20 ofrece el horario de las 16:30" classname="apps/web/playwright/proyecto-qa/disponibilidad/availability.e2e.ts" time="9.927">
+</testcase>
+<testcase name="US-06 Disponibilidad › CP-20 no ofrece el horario de las 17:00" classname="apps/web/playwright/proyecto-qa/disponibilidad/availability.e2e.ts" time="9.391">
+</testcase>
+<testcase name="US-06 Disponibilidad › CP-21 solo ofrece horas de fin posteriores al inicio" classname="apps/web/playwright/proyecto-qa/disponibilidad/availability.e2e.ts" time="6.096">
+</testcase>
+<testcase name="US-06 Disponibilidad › CP-21 no guarda un rango con fin anterior al inicio" classname="apps/web/playwright/proyecto-qa/disponibilidad/availability.e2e.ts" time="6.191">
+</testcase>
+</testsuite>
+<testsuite name="apps/web/playwright/proyecto-qa/disponibilidad/buffer.e2e.ts" timestamp="2026-11-19T03:50:59.420Z" hostname="@calcom/web" tests="7" failures="0" skipped="0" time="61.003" errors="0">
+<testcase name="US-07 Tiempo de amortiguación › CP-22 con buffer 15 bloquea las 9:30" classname="apps/web/playwright/proyecto-qa/disponibilidad/buffer.e2e.ts" time="6.22">
+</testcase>
+<testcase name="US-07 Tiempo de amortiguación › CP-22 con buffer 15 bloquea las 10:30" classname="apps/web/playwright/proyecto-qa/disponibilidad/buffer.e2e.ts" time="6.057">
+</testcase>
+<testcase name="US-07 Tiempo de amortiguación › CP-22 con buffer 15 ofrece las 9:00" classname="apps/web/playwright/proyecto-qa/disponibilidad/buffer.e2e.ts" time="5.946">
+</testcase>
+<testcase name="US-07 Tiempo de amortiguación › CP-22 con buffer 15 ofrece las 11:00" classname="apps/web/playwright/proyecto-qa/disponibilidad/buffer.e2e.ts" time="6.283">
+</testcase>
+<testcase name="US-07 Tiempo de amortiguación › CP-23 con buffer 0 ofrece las 9:30" classname="apps/web/playwright/proyecto-qa/disponibilidad/buffer.e2e.ts" time="12.382">
+</testcase>
+<testcase name="US-07 Tiempo de amortiguación › CP-23 con buffer 0 ofrece las 10:30" classname="apps/web/playwright/proyecto-qa/disponibilidad/buffer.e2e.ts" time="12.336">
+</testcase>
+<testcase name="US-07 Tiempo de amortiguación › CP-24 con buffer de 120 el primer horario es 14:30" classname="apps/web/playwright/proyecto-qa/disponibilidad/buffer.e2e.ts" time="11.779">
+</testcase>
+</testsuite>
+<testsuite name="apps/web/playwright/proyecto-qa/event-types/event-type.e2e.ts" timestamp="2026-11-19T03:50:59.420Z" hostname="@calcom/web" tests="7" failures="0" skipped="0" time="80.515" errors="0">
+<testcase name="US-05 Tipos de evento › CP-13 muestra el evento creado en la lista" classname="apps/web/playwright/proyecto-qa/event-types/event-type.e2e.ts" time="14.485">
+</testcase>
+<testcase name="US-05 Tipos de evento › CP-13 publica la página de reserva del evento creado" classname="apps/web/playwright/proyecto-qa/event-types/event-type.e2e.ts" time="11.18">
+</testcase>
+<testcase name="US-05 Tipos de evento › CP-14 marca como inválida una duración de 0" classname="apps/web/playwright/proyecto-qa/event-types/event-type.e2e.ts" time="9.962">
+</testcase>
+<testcase name="US-05 Tipos de evento › CP-14 no crea el evento con duración por debajo del mínimo" classname="apps/web/playwright/proyecto-qa/event-types/event-type.e2e.ts" time="9.495">
+</testcase>
+<testcase name="US-05 Tipos de evento › CP-15 crea el evento con duración en el mínimo" classname="apps/web/playwright/proyecto-qa/event-types/event-type.e2e.ts" time="12.075">
+</testcase>
+<testcase name="US-05 Tipos de evento › CP-16 exige el título" classname="apps/web/playwright/proyecto-qa/event-types/event-type.e2e.ts" time="8.111">
+</testcase>
+<testcase name="US-05 Tipos de evento › CP-17 rechaza una URL repetida" classname="apps/web/playwright/proyecto-qa/event-types/event-type.e2e.ts" time="15.207">
+</testcase>
+</testsuite>
+<testsuite name="apps/web/playwright/proyecto-qa/perfil/perfil.e2e.ts" timestamp="2026-11-19T03:50:59.420Z" hostname="@calcom/web" tests="7" failures="0" skipped="0" time="65.174" errors="0">
+<testcase name="US-03 Perfil de usuario › CP-10 conserva el nombre tras recargar" classname="apps/web/playwright/proyecto-qa/perfil/perfil.e2e.ts" time="10.929">
+</testcase>
+<testcase name="US-03 Perfil de usuario › CP-10 conserva el nombre de usuario tras recargar" classname="apps/web/playwright/proyecto-qa/perfil/perfil.e2e.ts" time="12.51">
+</testcase>
+<testcase name="US-03 Perfil de usuario › CP-10 conserva la zona horaria tras recargar" classname="apps/web/playwright/proyecto-qa/perfil/perfil.e2e.ts" time="13.33">
+</testcase>
+<testcase name="US-03 Perfil de usuario › CP-11 muestra un error al guardar un nombre de usuario existente" classname="apps/web/playwright/proyecto-qa/perfil/perfil.e2e.ts" time="9.46">
+</testcase>
+<testcase name="US-03 Perfil de usuario › CP-11 conserva el nombre de usuario original" classname="apps/web/playwright/proyecto-qa/perfil/perfil.e2e.ts" time="6.558">
+</testcase>
+<testcase name="US-03 Perfil de usuario › CP-12 no permite guardar un nombre de usuario vacío" classname="apps/web/playwright/proyecto-qa/perfil/perfil.e2e.ts" time="6.312">
+</testcase>
+<testcase name="US-03 Perfil de usuario › CP-12 normaliza los caracteres inválidos del nombre de usuario" classname="apps/web/playwright/proyecto-qa/perfil/perfil.e2e.ts" time="6.075">
+</testcase>
+</testsuite>
+<testsuite name="apps/web/playwright/proyecto-qa/reservas/confirmacion.e2e.ts" timestamp="2026-11-19T03:50:59.420Z" hostname="@calcom/web" tests="8" failures="1" skipped="0" time="66.532" errors="0">
+<testcase name="US-08 Confirmación de reservas › CP-25 informa que la reserva quedó enviada" classname="apps/web/playwright/proyecto-qa/reservas/confirmacion.e2e.ts" time="8.084">
+</testcase>
+<testcase name="US-08 Confirmación de reservas › CP-25 muestra la reserva en Sin confirmar" classname="apps/web/playwright/proyecto-qa/reservas/confirmacion.e2e.ts" time="5.414">
+</testcase>
+<testcase name="US-08 Confirmación de reservas › CP-26 confirma automáticamente la reserva" classname="apps/web/playwright/proyecto-qa/reservas/confirmacion.e2e.ts" time="8.093">
+</testcase>
+<testcase name="US-08 Confirmación de reservas › CP-26 muestra la reserva en Próximas" classname="apps/web/playwright/proyecto-qa/reservas/confirmacion.e2e.ts" time="7.005">
+</testcase>
+<testcase name="US-08 Confirmación de reservas › CP-27 confirma una reserva pendiente" classname="apps/web/playwright/proyecto-qa/reservas/confirmacion.e2e.ts" time="8.817">
+</testcase>
+<testcase name="US-08 Confirmación de reservas › CP-28 deja rechazada la reserva" classname="apps/web/playwright/proyecto-qa/reservas/confirmacion.e2e.ts" time="7.95">
+</testcase>
+<testcase name="US-08 Confirmación de reservas › CP-28 libera el horario rechazado" classname="apps/web/playwright/proyecto-qa/reservas/confirmacion.e2e.ts" time="10.714">
+</testcase>
+<testcase name="US-08 Confirmación de reservas › CP-29 no permite confirmar una reserva cancelada" classname="apps/web/playwright/proyecto-qa/reservas/confirmacion.e2e.ts" time="10.455">
+<failure message="confirmacion.e2e.ts:127:7 CP-29 no permite confirmar una reserva cancelada" type="FAILURE">
+<![CDATA[  [@calcom/web] › apps/web/playwright/proyecto-qa/reservas/confirmacion.e2e.ts:127:7 › US-08 Confirmación de reservas › CP-29 no permite confirmar una reserva cancelada 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "CANCELLED"
+    Received: "ACCEPTED"
+
+      143 |     });
+      144 |
+    > 145 |     expect(status).toBe("CANCELLED");
+          |                    ^
+      146 |   });
+      147 | });
+      148 |
+        at /home/kenda/cal.diy/apps/web/playwright/proyecto-qa/reservas/confirmacion.e2e.ts:145:20
+
+    Error Context: test-results/results/proyecto-qa-reservas-confi-2e1a7-irmar-una-reserva-cancelada--calcom-web/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/results/proyecto-qa-reservas-confi-2e1a7-irmar-una-reserva-cancelada--calcom-web/trace.zip
+    Usage:
+
+        yarn playwright show-trace test-results/results/proyecto-qa-reservas-confi-2e1a7-irmar-una-reserva-cancelada--calcom-web/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../results/proyecto-qa-reservas-confi-2e1a7-irmar-una-reserva-cancelada--calcom-web/error-context.md]]
+
+[[ATTACHMENT|../results/proyecto-qa-reservas-confi-2e1a7-irmar-una-reserva-cancelada--calcom-web/trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="apps/web/playwright/proyecto-qa/reservas/ventana-reserva.e2e.ts" timestamp="2026-11-19T03:50:59.420Z" hostname="@calcom/web" tests="4" failures="0" skipped="0" time="18.633" errors="0">
+<testcase name="US-09 Ventana de reserva › CP-30 no ofrece el último horario antes de cumplir 24 h" classname="apps/web/playwright/proyecto-qa/reservas/ventana-reserva.e2e.ts" time="5.072">
+</testcase>
+<testcase name="US-09 Ventana de reserva › CP-31 ofrece el primer horario después de cumplir 24 h" classname="apps/web/playwright/proyecto-qa/reservas/ventana-reserva.e2e.ts" time="4.51">
+</testcase>
+<testcase name="US-09 Ventana de reserva › CP-32 ofrece horarios el día 30" classname="apps/web/playwright/proyecto-qa/reservas/ventana-reserva.e2e.ts" time="4.724">
+</testcase>
+<testcase name="US-09 Ventana de reserva › CP-33 no ofrece horarios el día 31" classname="apps/web/playwright/proyecto-qa/reservas/ventana-reserva.e2e.ts" time="4.327">
+</testcase>
+</testsuite>
+</testsuites>
