@@ -18,7 +18,7 @@ Requisitos: `.env` con `NEXT_PUBLIC_IS_E2E=1`, base de datos levantada con `yarn
 
 ```bash
 # Un archivo
-PLAYWRIGHT_HEADLESS=1 yarn e2e apps/web/playwright/proyecto-qa/auth/login.e2e.ts --workers=6
+PLAYWRIGHT_HEADLESS=1 yarn e2e apps/web/playwright/proyecto-qa/reservas/booking-form.e2e.ts --workers=6
 
 # Suite completa del curso, en paralelo
 PLAYWRIGHT_HEADLESS=1 yarn e2e apps/web/playwright/proyecto-qa --workers=6
@@ -28,13 +28,11 @@ npx playwright show-report test-results/reports/playwright-html-report
 npx playwright show-trace <ruta-al-trace.zip>
 ```
 
-## Estado de la automatización
+## Alcance de esta rama
 
-- **Cobertura:** 62 de 68 casos (91,2 %), con 120 pruebas. CP-63 a CP-68 son manuales.
-- **Última corrida:** 117 aprobadas y 3 fallidas, 6 procesos, unos 2,5 minutos. Resultado en `evidencias/2026-11-18/results.xml`.
-- **Fallos atribuidos a la aplicación:** CP-29, CP-51 y CP-54. CP-60 falla de forma intermitente en el perfil. Ver `DEFECTOS.md`.
-- **CP-11:** se acepta como aprobado porque el cambio se rechaza y el nombre no se guarda; el mensaje poco claro queda como observación.
-- **Limitación:** CP-43 pasa por API, pero `CL-BUG-4` describe un fallo en la pantalla que debe revisarse.
+Esta rama reúne las pruebas automatizadas de **CP-34 a CP-62**, el bloque asignado originalmente a Gary, para que pueda revisarlas y ejecutarlas.
+
+**Autoría:** estas pruebas fueron desarrolladas por Kendall con asistencia de Claude Code, como muestra el historial de Git. Si se modifican o se presentan en el curso, conserva esta aclaración y el historial.
 
 ### Corrida recomendada
 
@@ -47,11 +45,9 @@ yarn workspace @calcom/web copy-app-store-static
 (cd apps/web && NEXT_PUBLIC_IS_E2E=1 yarn next start -p 3000)
 ```
 
-`auth/registro.e2e.ts` levanta su propia base vacía en el puerto 5452 y otra instancia en el 3100, y las elimina al terminar.
-
 ## Patrón de las pruebas
 
-El ejemplo de referencia es [auth/login.e2e.ts](auth/login.e2e.ts), con sus utilidades en [lib/login.ts](lib/login.ts).
+El ejemplo de referencia es [reservas/booking-form.e2e.ts](reservas/booking-form.e2e.ts), con sus utilidades en [lib/reservas.ts](lib/reservas.ts).
 
 **Ciclo por archivo:** guion manual → ejecución manual con captura → registro en `EJECUCION_MANUAL.md` → prueba automatizada → ejecución con `--workers=6` → revisión → commit en tu rama → merge a `proyecto-qa`.
 
