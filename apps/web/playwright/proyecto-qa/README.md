@@ -31,8 +31,9 @@ npx playwright show-trace <ruta-al-trace.zip>
 ## Estado de la automatización
 
 - **Cobertura:** 62 de 68 casos (91,2 %), con 120 pruebas. CP-63 a CP-68 son manuales.
-- **Última corrida:** 114 aprobadas y 6 fallidas, 6 procesos, unos 2,2 minutos. Resultado en `evidencias/2026-11-18/results.xml`.
-- **Fallos atribuidos a la aplicación:** CP-11, CP-29, CP-51, CP-54 y, de forma intermitente, CP-60. Ver `DEFECTOS.md`.
+- **Última corrida:** 117 aprobadas y 3 fallidas, 6 procesos, unos 2,5 minutos. Resultado en `evidencias/2026-11-18/results.xml`.
+- **Fallos atribuidos a la aplicación:** CP-29, CP-51 y CP-54. CP-60 falla de forma intermitente en el perfil. Ver `DEFECTOS.md`.
+- **CP-11:** se acepta como aprobado porque el cambio se rechaza y el nombre no se guarda; el mensaje poco claro queda como observación.
 - **Limitación:** CP-43 pasa por API, pero `CL-BUG-4` describe un fallo en la pantalla que debe revisarse.
 
 ### Corrida recomendada

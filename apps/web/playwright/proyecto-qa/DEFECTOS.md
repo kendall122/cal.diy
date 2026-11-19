@@ -7,7 +7,7 @@ Commit probado: `ae027bb70e`. Numeración para no chocar al juntar ramas: **Kend
 | ID | Código QAtlas | CP | Título | Severidad | Prioridad | Estado | Reportó |
 |---|---|---|---|---|---|---|---|
 | DEF-01 | CL-BUG-3 | CP-29 | Una reserva cancelada puede confirmarse mediante `bookings.confirm` | Alta | Media | Abierto | Kendall |
-| DEF-02 | Pendiente | CP-11 | El perfil ofrece actualizar a un nombre de usuario que ya existe | Media | Media | Abierto | Claude Code |
+| DEF-02 | No aplica | CP-11 | Observación: el perfil presenta como disponible un nombre de usuario existente | Baja | Baja | Observación | Claude Code |
 | DEF-03 | Pendiente | CP-51 | La reserva simultánea rechazada responde HTTP 400 en lugar de 409 | Media | Media | Abierto | Claude Code |
 | DEF-04 | CL-BUG-5 | CP-54 | Consultar la reserva de otro usuario responde HTTP 500 en lugar de 403 o 404 | Media | Media | Abierto | Gary / Claude Code |
 | DEF-05 | Pendiente | CP-60 | Error intermitente de React #419 al cargar el perfil | Baja | Baja | Abierto | Claude Code |
@@ -28,18 +28,18 @@ Commit probado: `ae027bb70e`. Numeración para no chocar al juntar ramas: **Kend
 - **Evidencia:** `evidencias/2026-11-18/results.xml`, prueba «CP-29 no permite confirmar una reserva cancelada».
 - **Commit y entorno:** ae027bb70e · Ubuntu 24.04 (WSL2), Chromium, build de producción, http://localhost:3000
 
-### DEF-02: El perfil acepta iniciar el cambio a un usuario existente
+### DEF-02: Observación de usabilidad con un usuario existente
 
-- **Código QAtlas:** pendiente
-- **CP relacionado:** CP-11
-- **Severidad / prioridad:** media / media
+- **Código QAtlas:** no aplica
+- **CP relacionado:** CP-11 (el caso se considera aprobado: el cambio se rechaza y el nombre no se guarda)
+- **Severidad / prioridad:** baja / baja
 - **Precondiciones:** existen dos usuarios y el primero tiene sesión iniciada.
 - **Pasos para reproducir:**
   1. Abrir `/settings/my-account/profile`.
   2. Escribir en Username el nombre del segundo usuario y esperar la validación.
-- **Resultado esperado:** aparece «Username is already taken» y no se ofrece «Update».
-- **Resultado obtenido:** no aparece el mensaje y se ofrece «Update». `POST /api/username` responde `available: true`.
-- **Evidencia:** `evidencias/2026-11-18/results.xml`, pruebas «CP-11».
+- **Mejora sugerida:** mostrar «Username is already taken» antes de ofrecer «Update».
+- **Resultado obtenido:** no aparece el mensaje, el campo muestra una marca de disponible y se ofrece «Update». `POST /api/username` responde `available: true`. Al confirmar con «Save» aparece «Error updating settings» y el nombre de usuario no cambia.
+- **Evidencia:** `evidencias/2026-11-18/results.xml`, pruebas «CP-11», y `evidencias/manual/CP-11_2026-11-18.png`.
 - **Commit y entorno:** ae027bb70e · Ubuntu 24.04 (WSL2), Chromium, build de producción, http://localhost:3000
 
 ### DEF-03: El conflicto de reservas simultáneas no responde HTTP 409

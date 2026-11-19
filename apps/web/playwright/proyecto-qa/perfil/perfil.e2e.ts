@@ -1,4 +1,5 @@
 import { slugify } from "@calcom/lib/slugify";
+import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "../../lib/fixtures";
 import { localize } from "../../lib/localize";
@@ -10,17 +11,19 @@ const GENERAL_URL = "/settings/my-account/general";
 const UPDATE_PROFILE_API = "/api/trpc/me/updateProfile?batch=1";
 const USERNAME_INPUT = "[data-testid=username-input]";
 const UPDATE_USERNAME_BUTTON = "[data-testid=update-username-btn]:visible";
-// El error de un usuario duplicado aparece en segundos; no hace falta el límite global de 120 s.
+// El error al guardar aparece en segundos; no hace falta el límite global de 120 s.
 const VISIBLE_MESSAGE_TIMEOUT = 15_000;
 
 test.describe.configure({ mode: "parallel" });
 
 test.describe("US-03 Perfil de usuario", () => {
   let userId: number;
+  let originalUsername: string | null;
 
   test.beforeEach(async ({ users }) => {
     const user = await users.create();
     userId = user.id;
+    originalUsername = user.username;
     await user.apiLogin(PROFILE_URL);
   });
 
@@ -63,25 +66,33 @@ test.describe("US-03 Perfil de usuario", () => {
     await expect(page.getByText(/America\/Costa.Rica/).first()).toBeVisible();
   });
 
-  test("CP-11 informa que el nombre de usuario ya existe", async ({ page, users }) => {
-    const t = await localize("en");
-    const otherUser = await users.create();
-    await page.locator(USERNAME_INPUT).fill(otherUser.username ?? "");
+  async function tryToUseExistingUsername(page: Page, existingUsername: string): Promise<void> {
+    await page.locator(USERNAME_INPUT).fill(existingUsername);
+    await page.locator(UPDATE_USERNAME_BUTTON).click();
+    const updateAttempt = page.waitForResponse(`**${UPDATE_PROFILE_API}`);
+    await page.locator("[data-testid=save-username]").click();
+    await updateAttempt;
+  }
 
-    await expect(page.getByText(t("username_already_taken"))).toBeVisible({
+  test("CP-11 muestra un error al guardar un nombre de usuario existente", async ({ page, users }) => {
+    const t = await localize("en");
+    const otherUser = await retryOnBusyDatabase(() => users.create());
+    await tryToUseExistingUsername(page, otherUser.username ?? "");
+
+    await expect(page.getByText(t("error_updating_settings"))).toBeVisible({
       timeout: VISIBLE_MESSAGE_TIMEOUT,
     });
   });
 
-  test("CP-11 no ofrece actualizar a un nombre de usuario existente", async ({ page, users }) => {
-    const otherUser = await users.create();
-    const availabilityCheck = page.waitForResponse("**/api/username");
-    await page.locator(USERNAME_INPUT).fill(otherUser.username ?? "");
-    await availabilityCheck;
-
-    await expect(page.locator(UPDATE_USERNAME_BUTTON)).toHaveCount(0, {
-      timeout: VISIBLE_MESSAGE_TIMEOUT,
+  test("CP-11 conserva el nombre de usuario original", async ({ page, prisma, users }) => {
+    const otherUser = await retryOnBusyDatabase(() => users.create());
+    await tryToUseExistingUsername(page, otherUser.username ?? "");
+    const savedUser = await prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { username: true },
     });
+
+    expect(savedUser.username).toBe(originalUsername);
   });
 
   test("CP-12 no permite guardar un nombre de usuario vacío", async ({ page }, testInfo) => {
