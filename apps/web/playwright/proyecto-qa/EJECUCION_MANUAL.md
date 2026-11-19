@@ -20,6 +20,3 @@ Evidencia: ruta de la captura en `evidencias/manual/CP-xx_<AAAA-MM-DD>.png` o en
 
 | CP | Fecha | Ejecutó | Resultado | Observaciones | Evidencia | Defecto |
 |---|---|---|---|---|---|---|
-| CP-50 | 2026-11-18 | Claude Code | Pasó | `POST /api/book/event` sin correo ni horario respondió HTTP 400 indicando `start` y `responses,email`; las reservas del evento siguieron en 4. | `evidencias/manual/CP-50_2026-11-18.json` | — |
-| CP-51 | 2026-11-18 | Claude Code | Pasó | Dos `POST /api/book/event` simultáneos al 8/12/2026, 15:00: uno respondió HTTP 200 y el otro HTTP 409 (`booking_conflict_error`). Solo existe una reserva en ese horario. | `evidencias/manual/CP-51_2026-11-18.json` | — |
-| CP-52 | 2026-11-18 | Claude Code | Pasó | `slots.getSchedule` con `Asia/Tokyo` respondió HTTP 200 con 32 horarios sin solapamientos. Las 9:00 de Costa Rica del 1/12 aparecen como 00:00 del 2/12 en Tokio. | `evidencias/manual/CP-52_2026-11-18.json` | — |
