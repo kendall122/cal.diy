@@ -28,6 +28,26 @@ npx playwright show-report test-results/reports/playwright-html-report
 npx playwright show-trace <ruta-al-trace.zip>
 ```
 
+## Estado de la automatización
+
+- **Cobertura:** 62 de 68 casos (91,2 %), con 120 pruebas. CP-63 a CP-68 son manuales.
+- **Última corrida:** 114 aprobadas y 6 fallidas, 6 procesos, unos 2,2 minutos. Resultado en `evidencias/2026-11-18/results.xml`.
+- **Fallos atribuidos a la aplicación:** CP-11, CP-29, CP-51, CP-54 y, de forma intermitente, CP-60. Ver `DEFECTOS.md`.
+- **Limitación:** CP-43 pasa por API, pero `CL-BUG-4` describe un fallo en la pantalla que debe revisarse.
+
+### Corrida recomendada
+
+El modo desarrollo satura la memoria en WSL con 12 GB. Usa un build de producción:
+
+```bash
+(cd packages/trpc && yarn build)
+yarn workspace @calcom/web copy-app-store-static
+(cd apps/web && NEXT_PUBLIC_IS_E2E=1 NODE_OPTIONS=--max-old-space-size=6144 yarn next build)
+(cd apps/web && NEXT_PUBLIC_IS_E2E=1 yarn next start -p 3000)
+```
+
+`auth/registro.e2e.ts` levanta su propia base vacía en el puerto 5452 y otra instancia en el 3100, y las elimina al terminar.
+
 ## Patrón de las pruebas
 
 El ejemplo de referencia es [auth/login.e2e.ts](auth/login.e2e.ts), con sus utilidades en [lib/login.ts](lib/login.ts).

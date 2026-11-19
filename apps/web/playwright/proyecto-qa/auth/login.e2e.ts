@@ -11,6 +11,7 @@ import {
   loginFieldError,
   submitCredentials,
 } from "../lib/login";
+import { retryOnBusyDatabase } from "../lib/reservas";
 
 type UsersFixture = ReturnType<typeof createUsersFixture>;
 
@@ -68,7 +69,7 @@ test.describe("US-02 Inicio de sesión", () => {
   });
 
   test.afterEach(async ({ users }) => {
-    await users.deleteAll();
+    await retryOnBusyDatabase(() => users.deleteAll());
   });
 
   test("CP-03 inicia sesión con credenciales válidas y accede al panel", async ({ page, users }) => {

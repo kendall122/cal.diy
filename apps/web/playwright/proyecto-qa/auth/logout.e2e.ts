@@ -1,17 +1,18 @@
 import { expect } from "@playwright/test";
 import { test } from "../../lib/fixtures";
 import { localize } from "../../lib/localize";
+import { retryOnBusyDatabase } from "../lib/reservas";
 
 test.describe.configure({ mode: "parallel" });
 
 test.describe("US-02 Cierre de sesión", () => {
   test.beforeEach(async ({ users }) => {
-    const user = await users.create();
+    const user = await retryOnBusyDatabase(() => users.create());
     await user.apiLogin("/event-types");
   });
 
   test.afterEach(async ({ users }) => {
-    await users.deleteAll();
+    await retryOnBusyDatabase(() => users.deleteAll());
   });
 
   test("CP-09 redirige al login al abrir una ruta protegida tras cerrar sesión", async ({ page }) => {
