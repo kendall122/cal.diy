@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
-import { test } from "../../lib/fixtures";
 import { localize } from "../../lib/localize";
+import { captureEvidence, test } from "../lib/qa-test";
 import {
   configureHostAvailability,
   createEventType,
@@ -44,7 +44,8 @@ test.describe("US-10 Formulario de reserva", () => {
     await slotButton(page, hostTime(tuesday, "09:00")).click();
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

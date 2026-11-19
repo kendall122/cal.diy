@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../../lib/fixtures";
+import { captureEvidence, test } from "../lib/qa-test";
 import {
   bookSlotFromPage,
   cancelFromBookingPage,
@@ -13,7 +13,8 @@ import {
 test.use({ timezoneId: "America/Costa_Rica" });
 
 test.describe("US-10 Flujo completo de reserva", () => {
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

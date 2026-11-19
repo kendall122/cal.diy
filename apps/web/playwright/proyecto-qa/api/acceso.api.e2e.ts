@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../lib/qa-test";
+import { captureEvidence, test } from "../lib/qa-test";
 import {
   configureHostAvailability,
   createBookingByApi,
@@ -16,7 +16,8 @@ const trpcQuery = (path: string, json: unknown) =>
 test.describe.configure({ mode: "parallel" });
 
 test.describe("US-02 y US-15 Control de acceso", () => {
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 
@@ -36,29 +37,29 @@ test.describe("US-02 y US-15 Control de acceso", () => {
   async function requestOtherUserBooking({
     users,
     prisma,
-    page,
-  }: Pick<Parameters<Parameters<typeof test>[2]>[0], "users" | "prisma" | "page">) {
+    request,
+  }: Pick<Parameters<Parameters<typeof test>[2]>[0], "users" | "prisma" | "request">) {
     const owner = await retryOnBusyDatabase(() => users.create());
     await configureHostAvailability(prisma, owner.id);
     const eventType = await createEventType(prisma, owner.id, "qa-acceso");
     const tuesday = futureWeekday(TUESDAY);
-    const booking = await createBookingByApi(page.request, eventType, hostTime(tuesday, "09:00"), {
+    const booking = await createBookingByApi(request, eventType, hostTime(tuesday, "09:00"), {
       name: "Invitado Privado",
       email: "invitado-privado@test.com",
     });
     const otherUser = await retryOnBusyDatabase(() => users.create());
     await otherUser.apiLogin("/event-types");
-    return page.request.get(trpcQuery("bookings/getBookingDetails", { uid: booking.uid }));
+    return request.get(trpcQuery("bookings/getBookingDetails", { uid: booking.uid }));
   }
 
-  test("CP-54 responde HTTP 403 o 404 con la reserva de otro usuario", async ({ users, prisma, page }) => {
-    const response = await requestOtherUserBooking({ users, prisma, page });
+  test("CP-54 responde HTTP 403 o 404 con la reserva de otro usuario", async ({ users, prisma, request }) => {
+    const response = await requestOtherUserBooking({ users, prisma, request });
 
     expect([403, 404]).toContain(response.status());
   });
 
-  test("CP-54 no entrega datos de la reserva de otro usuario", async ({ users, prisma, page }) => {
-    const response = await requestOtherUserBooking({ users, prisma, page });
+  test("CP-54 no entrega datos de la reserva de otro usuario", async ({ users, prisma, request }) => {
+    const response = await requestOtherUserBooking({ users, prisma, request });
 
     expect(await response.text()).not.toContain("invitado-privado@test.com");
   });

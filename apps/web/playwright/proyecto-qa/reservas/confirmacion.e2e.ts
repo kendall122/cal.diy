@@ -132,7 +132,7 @@ test.describe("US-08 Confirmación de reservas", () => {
       select: { id: true },
     });
     await prepared.hostLogin("/bookings/cancelled");
-    await page.request.post("/api/trpc/bookings/confirm?batch=1", {
+    await request.post("/api/trpc/bookings/confirm?batch=1", {
       data: { 0: { json: { bookingId: booking.id, confirmed: true } } },
     });
     // La página de la reserva deja en la evidencia el estado visible después del intento.

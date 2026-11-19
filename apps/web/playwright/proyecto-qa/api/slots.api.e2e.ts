@@ -1,6 +1,6 @@
 import type { APIRequestContext } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { test } from "../lib/qa-test";
+import { captureEvidence, test } from "../lib/qa-test";
 import {
   addDays,
   configureHostAvailability,
@@ -55,7 +55,8 @@ test.describe("US-10 API de horarios", () => {
     await createEventType(prisma, host.id, "qa-slots");
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

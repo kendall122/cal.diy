@@ -1,6 +1,6 @@
 import { createHmac, randomUUID } from "node:crypto";
 import { expect } from "@playwright/test";
-import { test } from "../lib/qa-test";
+import { captureEvidence, logEvidence, test } from "../lib/qa-test";
 import { startWebhookReceiver } from "../lib/receptor-webhook";
 import {
   bookingBody,
@@ -44,7 +44,8 @@ test.describe("US-16 Entrega de webhooks", () => {
     });
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await receiver.close();
     await retryOnBusyDatabase(() => users.deleteAll());
   });
@@ -52,6 +53,12 @@ test.describe("US-16 Entrega de webhooks", () => {
   test("CP-55 envía BOOKING_CREATED con el invitado correcto", async ({ request }) => {
     await createBookingByApi(request, eventType, slot);
     const webhook = await receiver.waitForEvent("BOOKING_CREATED");
+    logEvidence(test.info(), {
+      method: "WEBHOOK",
+      target: "BOOKING_CREATED",
+      status: "recibido",
+      detail: webhook.rawBody,
+    });
 
     expect(webhook.payload.attendees?.[0]?.email).toBe(DEFAULT_GUEST.email);
   });
@@ -62,6 +69,12 @@ test.describe("US-16 Entrega de webhooks", () => {
     await page.locator("[data-testid=cancel_reason]").fill("Prueba QA");
     await page.locator("[data-testid=confirm_cancel]").click();
     const webhook = await receiver.waitForEvent("BOOKING_CANCELLED");
+    logEvidence(test.info(), {
+      method: "WEBHOOK",
+      target: "BOOKING_CANCELLED",
+      status: "recibido",
+      detail: webhook.rawBody,
+    });
 
     expect(webhook.triggerEvent).toBe("BOOKING_CANCELLED");
   });
@@ -72,6 +85,12 @@ test.describe("US-16 Entrega de webhooks", () => {
       data: { ...bookingBody(eventType, newSlot), rescheduleUid: booking.uid },
     });
     const webhook = await receiver.waitForEvent("BOOKING_RESCHEDULED");
+    logEvidence(test.info(), {
+      method: "WEBHOOK",
+      target: "BOOKING_RESCHEDULED",
+      status: "recibido",
+      detail: webhook.rawBody,
+    });
 
     expect(webhook.payload.startTime).toBe(newSlot.replace(".000Z", "Z"));
   });
@@ -79,6 +98,12 @@ test.describe("US-16 Entrega de webhooks", () => {
   test("CP-58 firma el webhook con el secreto configurado", async ({ request }) => {
     await createBookingByApi(request, eventType, slot);
     const webhook = await receiver.waitForEvent("BOOKING_CREATED");
+    logEvidence(test.info(), {
+      method: "WEBHOOK",
+      target: "BOOKING_CREATED",
+      status: "recibido",
+      detail: webhook.rawBody,
+    });
     const expectedSignature = createHmac("sha256", SECRET).update(webhook.rawBody).digest("hex");
 
     expect(webhook.signature).toBe(expectedSignature);

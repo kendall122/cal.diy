@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { test } from "../../lib/fixtures";
+import { captureEvidence, test } from "../lib/qa-test";
 import { addDays, createEventType, hostToday, plusMinutes, retryOnBusyDatabase } from "../lib/reservas";
 
 const BOOKINGS = {
@@ -57,7 +57,8 @@ test.describe("US-14 y US-15 Panel de reservas", () => {
     await host.apiLogin("/bookings/upcoming");
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

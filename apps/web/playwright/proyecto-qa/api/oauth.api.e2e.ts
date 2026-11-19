@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../../lib/fixtures";
+import { captureEvidence, test } from "../lib/qa-test";
 import { retryOnBusyDatabase } from "../lib/reservas";
 
 const GOOGLE_APP_SLUG = "google-calendar";
@@ -35,15 +35,16 @@ test.describe("US-04 Conexión con Google Calendar", () => {
     await prisma.$executeRaw`UPDATE "App" SET "keys" = ${originalKeys === null ? null : JSON.stringify(originalKeys)}::jsonb WHERE "slug" = ${GOOGLE_APP_SLUG}`;
   });
 
-  test.beforeEach(async ({ page, users }) => {
+  test.beforeEach(async ({ request, users }) => {
     const user = await retryOnBusyDatabase(() => users.create());
     await user.apiLogin("/apps/installed/calendar");
-    const response = await page.request.get("/api/integrations/googlecalendar/add");
+    const response = await request.get("/api/integrations/googlecalendar/add");
     const { url } = await response.json();
     authorizationUrl = new URL(url);
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 
