@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../../lib/fixtures";
+import { captureEvidence, test } from "../lib/qa-test";
 import {
   ALL_DAY,
   addDays,
@@ -39,7 +39,8 @@ test.describe("US-10 Zonas horarias", () => {
     await createEventType(prisma, host.id, "qa-zona");
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

@@ -107,6 +107,7 @@ function parseArguments(argv) {
     "--nombre": "name",
     "--id-corrida": "externalId",
     "--proyecto": "project",
+    "--build": "build",
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -120,7 +121,7 @@ function parseArguments(argv) {
   return options;
 }
 
-function loadSettings() {
+export function loadSettings() {
   const fileValues = {};
   if (existsSync(ENV_FILE)) {
     for (const line of readFileSync(ENV_FILE, "utf8").split(/\r?\n/)) {
@@ -138,7 +139,7 @@ function git(...args) {
   return execFileSync("git", args, { cwd: REPO_ROOT, encoding: "utf8" }).trim();
 }
 
-async function api({ url, token }, method, path, body) {
+export async function api({ url, token }, method, path, body) {
   const response = await fetch(`${url}${path}`, {
     method,
     headers: {
@@ -199,6 +200,7 @@ async function main() {
       external_id: options.externalId ?? `playwright-${commit.slice(0, 9)}-${today}`,
       environment: "local",
       browser: "chromium",
+      build: options.build,
       branch: git("branch", "--show-current"),
       commit_sha: commit,
     },

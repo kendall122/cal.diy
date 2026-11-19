@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
-import { test } from "../../lib/fixtures";
 import { localize } from "../../lib/localize";
+import { captureEvidence, test } from "../lib/qa-test";
 import { retryOnBusyDatabase } from "../lib/reservas";
 
 const NEW_WEBHOOK_URL = "/settings/developer/webhooks/new";
@@ -18,7 +18,8 @@ test.describe("US-16 Configuración de webhooks", () => {
     await page.locator("input[name=subscriberUrl]").waitFor();
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

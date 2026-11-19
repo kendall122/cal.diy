@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../../lib/fixtures";
+import { captureEvidence, test } from "../lib/qa-test";
 import { createEventType, retryOnBusyDatabase } from "../lib/reservas";
 
 const REMOVED_ROUTES = [
@@ -39,7 +39,8 @@ test.describe("Regresión del fork", () => {
     await user.apiLogin("/event-types");
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

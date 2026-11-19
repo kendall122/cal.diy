@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../lib/qa-test";
+import { captureEvidence, test } from "../lib/qa-test";
 import {
   bookingBody,
   configureHostAvailability,
@@ -31,7 +31,8 @@ test.describe("US-13 Reprogramación de reservas", () => {
     bookingPath = `/${host.username}/${eventType.slug}`;
   });
 
-  test.afterEach(async ({ users }) => {
+  test.afterEach(async ({ page, users }, testInfo) => {
+    await captureEvidence(page, testInfo);
     await retryOnBusyDatabase(() => users.deleteAll());
   });
 

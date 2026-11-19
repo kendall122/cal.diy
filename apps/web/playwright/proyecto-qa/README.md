@@ -123,4 +123,11 @@ node apps/web/playwright/proyecto-qa/lib/publicar-qatlas.mjs --enviar
 node apps/web/playwright/proyecto-qa/lib/publicar-qatlas.mjs --enviar --completar
 ```
 
-Opciones: `--archivo <ruta>`, `--nombre <texto>`, `--id-corrida <texto>` y `--proyecto <código>`.
+Para adjuntar capturas y una nota breve por caso a una ejecución existente. En las pruebas de API la captura muestra las llamadas y las respuestas del servidor:
+
+```bash
+QA_EVIDENCE_DIR="$PWD/apps/web/playwright/proyecto-qa/evidencias/<fecha>/capturas" PLAYWRIGHT_HEADLESS=1 yarn e2e apps/web/playwright/proyecto-qa --workers=6 --max-failures=0
+node apps/web/playwright/proyecto-qa/lib/publicar-evidencias-qatlas.mjs --ejecucion CL-RUN-X --archivo test-results/reports/results.xml --capturas apps/web/playwright/proyecto-qa/evidencias/<fecha>/capturas --enviar
+```
+
+Opciones: `--archivo <ruta>`, `--nombre <texto>`, `--id-corrida <texto>`, `--proyecto <código>` y `--build <texto>`. Usa `--build "Playwright con asistencia de Claude Code"` para conservar la aclaración de autoría.

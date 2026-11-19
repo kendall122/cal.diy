@@ -1,0 +1,106 @@
+GUIA PARA EJECUTAR CP-50, CP-51 Y CP-52
+Tiempo aproximado: 5 minutos.
+
+ANTES DE EMPEZAR
+1. Levanta cal.diy e inicia sesion en http://localhost:3000 con la cuenta duena del evento.
+2. Elige un evento de 30 minutos, sin confirmacion y con disponibilidad.
+3. Anota estos datos:
+   - Usuario: el de tu enlace publico (localhost:3000/USUARIO/evento).
+   - Evento: la ultima parte de ese enlace.
+   - ID: abre el evento en Tipos de evento y copia el numero de /event-types/ID.
+4. Pulsa F12 y abre Console. Si no deja pegar, escribe: allow pasting
+   y pulsa Enter.
+
+COMO EJECUTAR
+Pega cada bloque en la consola, cambia los datos de arriba y pulsa Enter.
+Ejecuta cada bloque una sola vez. CP-51 crea una reserva real.
+
+======================================================================
+CP-50: RESERVA SIN CORREO NI HORARIO
+Cambia: ID
+======================================================================
+(async () => {
+  const ID = 0; // Número que aparece en /event-types/ID
+  const contar = async () => {
+    const input = encodeURIComponent(JSON.stringify({ 0: { json: { filters: { status: "upcoming", eventTypeIds: [ID] }, limit: 1, offset: 0 } } }));
+    const r = await fetch("/api/trpc/bookings/get?batch=1&input=" + input);
+    return (await r.json())[0].result.data.json.totalCount;
+  };
+  const antes = await contar();
+  const r = await fetch("/api/book/event", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ eventTypeId: ID, timeZone: "America/Costa_Rica", language: "es", metadata: {}, responses: { name: "Invitado QA" } }),
+  });
+  const cuerpo = await r.text();
+  const despues = await contar();
+  console.log("HTTP:", r.status);
+  console.log("Detalle:", cuerpo);
+  console.log("Reservas próximas del evento:", antes, "->", despues);
+  console.log(r.status === 400 && antes === despues ? "CP-50 PASÓ" : "CP-50 FALLÓ");
+})();
+
+======================================================================
+CP-51: DOS RESERVAS SIMULTANEAS
+Cambia: USUARIO, EVENTO e ID
+======================================================================
+(async () => {
+  const USUARIO = "tu-usuario";
+  const EVENTO = "tu-evento";
+  const ID = 0; // Número que aparece en /event-types/ID
+  const MINUTOS = 30;
+  const desde = new Date(Date.now() + 7 * 864e5).toISOString();
+  const hasta = new Date(Date.now() + 21 * 864e5).toISOString();
+  const input = encodeURIComponent(JSON.stringify({ 0: { json: { usernameList: [USUARIO], eventTypeSlug: EVENTO, startTime: desde, endTime: hasta, timeZone: "America/Costa_Rica", isTeamEvent: false, orgSlug: null } } }));
+  const datos = await (await fetch("/api/trpc/slots/getSchedule?batch=1&input=" + input)).json();
+  const horarios = Object.values(datos[0].result.data.json.slots).flat().map((s) => s.time).sort();
+  if (!horarios.length) return console.log("No hay horarios disponibles: revisa USUARIO y EVENTO");
+  const start = horarios[horarios.length - 1];
+  const end = new Date(new Date(start).getTime() + MINUTOS * 60000).toISOString();
+  const body = JSON.stringify({ eventTypeId: ID, start, end, timeZone: "America/Costa_Rica", language: "es", metadata: {}, responses: { name: "Invitado Prueba", email: "invitado@test.com", location: { value: "integrations:daily", optionValue: "" } } });
+  const reservar = () => fetch("/api/book/event", { method: "POST", headers: { "content-type": "application/json" }, body }).then(async (r) => ({ http: r.status, detalle: (await r.text()).slice(0, 120) }));
+  const res = await Promise.all([reservar(), reservar()]);
+  console.log("Horario:", new Date(start).toLocaleString("es-CR", { timeZone: "America/Costa_Rica" }));
+  console.table(res);
+  const codigos = res.map((r) => r.http).sort().join(",");
+  console.log(codigos === "200,409" ? "CP-51 PASÓ" : "CP-51 FALLÓ: se esperaba 200 y 409");
+})();
+
+======================================================================
+CP-52: HORARIOS EN LA ZONA DE TOKIO
+Cambia: USUARIO y EVENTO
+======================================================================
+(async () => {
+  const USUARIO = "tu-usuario";
+  const EVENTO = "tu-evento";
+  const MINUTOS = 30;
+  const desde = new Date(Date.now() + 864e5).toISOString();
+  const hasta = new Date(Date.now() + 14 * 864e5).toISOString();
+  const consultar = async (timeZone) => {
+    const input = encodeURIComponent(JSON.stringify({ 0: { json: { usernameList: [USUARIO], eventTypeSlug: EVENTO, startTime: desde, endTime: hasta, timeZone, isTeamEvent: false, orgSlug: null } } }));
+    const r = await fetch("/api/trpc/slots/getSchedule?batch=1&input=" + input);
+    return { http: r.status, slots: (await r.json())[0].result.data.json.slots };
+  };
+  const tokio = await consultar("Asia/Tokyo");
+  const cr = await consultar("America/Costa_Rica");
+  const lista = (d) => Object.values(d).flat().map((s) => s.time).sort();
+  const t = lista(tokio.slots);
+  const solapados = t.filter((v, i) => i && new Date(v) - new Date(t[i - 1]) < MINUTOS * 60000).length;
+  const fechaTokio = (v) => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(new Date(v));
+  const fechasBien = Object.entries(tokio.slots).every(([dia, v]) => v.every((s) => fechaTokio(s.time) === dia));
+  const iguales = JSON.stringify(t) === JSON.stringify(lista(cr.slots));
+  if (t.length) {
+    console.log("Primer horario en Costa Rica:", new Date(t[0]).toLocaleString("es-CR", { timeZone: "America/Costa_Rica" }));
+    console.log("Primer horario en Tokio:", new Date(t[0]).toLocaleString("es-CR", { timeZone: "Asia/Tokyo" }));
+  }
+  console.log("HTTP:", tokio.http, "| horarios:", t.length, "| solapados:", solapados, "| fechas en hora de Tokio:", fechasBien, "| mismos horarios:", iguales);
+  console.log(tokio.http === 200 && t.length > 0 && solapados === 0 && fechasBien && iguales ? "CP-52 PASÓ" : "CP-52 FALLÓ");
+})();
+
+AL TERMINAR
+1. Toma una captura de la consola por cada caso:
+   CP-50_AAAA-MM-DD.png
+   CP-51_AAAA-MM-DD.png
+   CP-52_AAAA-MM-DD.png
+2. Enviale a Kendall las capturas e indica si cada caso dio PASO o FALLO.
+3. Si alguno da error o FALLO, no lo repitas: manda la captura tal como quedo.
