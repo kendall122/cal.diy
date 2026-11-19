@@ -107,6 +107,7 @@ function parseArguments(argv) {
     "--nombre": "name",
     "--id-corrida": "externalId",
     "--proyecto": "project",
+    "--build": "build",
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -199,6 +200,7 @@ async function main() {
       external_id: options.externalId ?? `playwright-${commit.slice(0, 9)}-${today}`,
       environment: "local",
       browser: "chromium",
+      build: options.build,
       branch: git("branch", "--show-current"),
       commit_sha: commit,
     },

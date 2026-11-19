@@ -127,4 +127,4 @@ node apps/web/playwright/proyecto-qa/lib/publicar-qatlas.mjs --enviar
 node apps/web/playwright/proyecto-qa/lib/publicar-qatlas.mjs --enviar --completar
 ```
 
-Opciones: `--archivo <ruta>`, `--nombre <texto>`, `--id-corrida <texto>` y `--proyecto <código>`.
+Opciones: `--archivo <ruta>`, `--nombre <texto>`, `--id-corrida <texto>`, `--proyecto <código>` y `--build <texto>`.
